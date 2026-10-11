@@ -63,7 +63,7 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | clickhouse.nodeSelector | object | `{}` |  |
 | config.configYml | object | `{}` |  |
 | config.relay | string | `"# No YAML relay config given\n"` |  |
-| config.sentryConfPy | string | `"# No Python Extension Config Given\n"` |  |
+| config.sentryConfPy | string | `SENTRY_OPTIONS["spans.buffer.process-segments-task-rollout-rate"] = 1.0` |  |
 | config.snubaSettingsPy | string | `"# No Python Extension Config Given\n"` |  |
 | config.web.httpKeepalive | int | `15` |  |
 | config.web.maxRequests | int | `100000` |  |

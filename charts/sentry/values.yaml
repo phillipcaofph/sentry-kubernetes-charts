@@ -563,14 +563,6 @@ sentry:
               application: sentry
               taskname: sentry.snuba.query_subscriptions.run.process_metrics_subscription_from_kafka
               processingDeadlineDuration: 60
-          generic-metrics-subscription-results:
-            cluster: default
-            consumerGroup: query-subscription-consumer
-            raw:
-              namespace: snuba.subscriptions.generic_metrics.raw
-              application: sentry
-              taskname: sentry.snuba.query_subscriptions.run.process_generic_metrics_subscription_from_kafka
-              processingDeadlineDuration: 60
           subscription-results-eap-items:
             cluster: default
             consumerGroup: subscription-results-eap-items
@@ -995,7 +987,7 @@ sentry:
     noStrictOffsetReset: true
 
   genericMetricsConsumer:
-    enabled: true
+    enabled: false
     # Recreate if replicas=1, else RollingUpdate (see sentry-kubernetes/charts#2238). Override to force either.
     strategyType: null
     annotations: {}
@@ -1204,7 +1196,7 @@ sentry:
   processSegments:
     # Default --max-poll-interval-ms (self-hosted SENTRY_KAFKA_MAX_POLL_INTERVAL_MS). Set null to disable.
     maxPollIntervalMs: 300000
-    enabled: true
+    enabled: false
     # Recreate if replicas=1, else RollingUpdate (see sentry-kubernetes/charts#2238). Override to force either.
     strategyType: null
     annotations: {}
@@ -1664,7 +1656,7 @@ snuba:
     # noStrictOffsetReset: false
 
   subscriptionConsumerGenericMetricsCounters:  # should have 1 partition and only 1 consumer replica: https://github.com/getsentry/snuba/issues/5855
-    enabled: true
+    enabled: false
     # Recreate if replicas=1, else RollingUpdate (see sentry-kubernetes/charts#2238). Override to force either.
     strategyType: null
     annotations: {}
@@ -1692,7 +1684,7 @@ snuba:
   genericMetricsCountersConsumer:
     # Default --max-poll-interval-ms (self-hosted SENTRY_KAFKA_MAX_POLL_INTERVAL_MS). Set null to disable.
     maxPollIntervalMs: 300000
-    enabled: true
+    enabled: false
     # Recreate if replicas=1, else RollingUpdate (see sentry-kubernetes/charts#2238). Override to force either.
     strategyType: null
     annotations: {}
@@ -2866,7 +2858,7 @@ config:
       "profiling": "taskworker-products"
       "releasehealth": "taskworker-products"
   sentryConfPy: |
-    # No Python Extension Config Given
+    SENTRY_OPTIONS["spans.buffer.process-segments-task-rollout-rate"] = 1.0
   snubaSettingsPy: |
     # No Python Extension Config Given
   relay: |
