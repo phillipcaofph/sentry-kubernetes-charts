@@ -1654,4 +1654,3 @@ externalPostgresql:
 - [AWS + Terraform](docs/usage-aws-terraform.md)
 - [DigitalOcean](docs/usage-digitalocean.md)
 - [External Services](docs/external-services.md)
-
