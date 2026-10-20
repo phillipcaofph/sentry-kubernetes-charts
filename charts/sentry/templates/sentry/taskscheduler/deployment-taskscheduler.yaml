@@ -66,9 +66,9 @@ spec:
       topologySpreadConstraints:
 {{ toYaml .Values.sentry.taskScheduler.topologySpreadConstraints | indent 8 }}
       {{- end }}
-      {{- if .Values.sentry.taskScheduler.securityContext }}
+      {{- with (include "sentry.podSecurityContext" (dict "securityContext" .Values.sentry.taskScheduler.securityContext "root" $)) }}
       securityContext:
-{{ toYaml .Values.sentry.taskScheduler.securityContext | indent 8 }}
+{{ . | indent 8 }}
       {{- end }}
       {{- if .Values.sentry.taskScheduler.priorityClassName }}
       priorityClassName: "{{ .Values.sentry.taskScheduler.priorityClassName }}"

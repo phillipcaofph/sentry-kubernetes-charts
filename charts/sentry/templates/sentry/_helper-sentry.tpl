@@ -363,7 +363,6 @@ sentry.conf.py: |-
               "organizations:issue-platform",
               "organizations:monitors",
               "organizations:dashboards-mep",
-              "organizations:mep-rollout-flag",
               "organizations:dashboards-rh-widget",
               "organizations:dynamic-sampling",
               "organizations:workflow-engine-ui",
@@ -821,6 +820,21 @@ Volume definition for sentry plugins
 - name: sentry-plugins
   emptyDir: {}
 {{- end }}
+{{- end -}}
+
+{{/*
+Pod securityContext for Sentry pods that mount the filestore. Uses the component's
+securityContext when set, otherwise defaults fsGroup to filestore.filesystem.fsGroup
+because Sentry images >= 26.10.0 run as the non-root `sentry` user.
+Usage: include "sentry.podSecurityContext" (dict "securityContext" .Values.sentry.web.securityContext "root" .)
+*/}}
+{{- define "sentry.podSecurityContext" -}}
+{{- if .securityContext -}}
+{{ toYaml .securityContext }}
+{{- else if .root.Values.filestore.filesystem.fsGroup -}}
+fsGroup: {{ .root.Values.filestore.filesystem.fsGroup }}
+fsGroupChangePolicy: OnRootMismatch
+{{- end -}}
 {{- end -}}
 
 {{/*

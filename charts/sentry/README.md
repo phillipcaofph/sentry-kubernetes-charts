@@ -98,6 +98,7 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | extraManifests | list | `[]` |  |
 | filestore.backend | string | `"filesystem"` |  |
 | filestore.filesystem.path | string | `"/var/lib/sentry/files"` |  |
+| filestore.filesystem.fsGroup | int | `999` | fsGroup for Sentry pods mounting the filestore when their own `securityContext` is unset (Sentry >= 26.10.0 runs as uid 999). Set to null to disable. |
 | filestore.filesystem.persistence.accessMode | string | `"ReadWriteOnce"` |  |
 | filestore.filesystem.persistence.enabled | bool | `true` |  |
 | filestore.filesystem.persistence.existingClaim | string | `""` |  |
@@ -1383,6 +1384,7 @@ Profiling uses `filestore.profiles`. Supported backends are `filesystem`, `gcs` 
 - For `filesystem` backend, if `filestore.profiles.filesystem.persistence.shareWithVroom=true`, set `vroom.persistence.accessModes` to include `ReadWriteMany`.
 - For `gcs` backend, Sentry pods mount a single GCS credentials secret. If `filestore.backend` or `replay.storage.backend` is also set to `gcs`, the corresponding `secretName` and `credentialsFile` must match `filestore.profiles.gcs.*`.
 - Configure vroom credentials yourself via `vroom.env`, `vroom.volumeMounts`, and `vroom.volumes`.
+- For S3-compatible endpoints (MinIO, SeaweedFS, ...), vroom `26.10.0`+ expects `use_path_style=true` and `disable_https=true` in `bucketString` (for example `s3://sentry-profiles?region=us-east-1&endpoint=minio:9000&use_path_style=true&disable_https=true`). The old `s3ForcePathStyle` / `disableSSL` params are no longer recognised.
 
 S3 example:
 

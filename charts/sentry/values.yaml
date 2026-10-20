@@ -146,6 +146,8 @@ vroom:
     existingClaim: ""
     # this will be passed to the SENTRY_BUCKET_PROFILES env var
     # examples: file:///var/vroom/sentry-profiles, s3://my-profiles-bucket, gs://my-profiles-bucket
+    # S3-compatible endpoints (vroom >= 26.10.0): s3://my-profiles-bucket?region=us-east-1&endpoint=minio:9000&use_path_style=true&disable_https=true
+    # (the old `s3ForcePathStyle` / `disableSSL` query params are no longer recognised)
     bucketString: "file:///var/vroom/sentry-profiles"
 
   autoscaling:
@@ -2621,6 +2623,12 @@ filestore:
 
   filesystem:
     path: /var/lib/sentry/files
+
+    ## Sentry images >= 26.10.0 run as the non-root `sentry` user (uid/gid 999) instead of root.
+    ## Sentry pods that mount the filestore get this fsGroup (with fsGroupChangePolicy: OnRootMismatch)
+    ## so fresh volumes, and files written by root under older images, stay writable.
+    ## Ignored for a component whose own `securityContext` is set. Set to null to disable.
+    fsGroup: 999
 
     ## Enable persistence using Persistent Volume Claims
     ## ref: http://kubernetes.io/docs/user-guide/persistent-volumes/

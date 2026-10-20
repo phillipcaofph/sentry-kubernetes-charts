@@ -2,6 +2,17 @@
 
 The changelog below refers to the main `sentry` chart only.
 
+## Upgrading to Sentry 26.10.0
+
+Targets [Sentry 26.10.0](https://github.com/getsentry/self-hosted/releases/tag/26.10.0).
+
+- **Sentry runs as non-root.** The `ghcr.io/getsentry/sentry` image now defaults to `USER sentry` (uid/gid 999) and no longer ships `gosu`. The chart sets `command: ["sentry"]`, which skips the image entrypoint, so Sentry pods ran as **root** until now. They now run as uid 999.
+  - Pods that mount the filestore (`web`, `taskworker`, `cleanup`, consumers with `persistentWorkers`) default to `securityContext: {fsGroup: 999, fsGroupChangePolicy: OnRootMismatch}` via `filestore.filesystem.fsGroup`. This keeps fresh block volumes and files written by root writable. A component's own `securityContext`, if set, replaces this default, so include `fsGroup` there yourself.
+  - Volumes where fsGroup has no effect (for example SMB/Azure Files with explicit `uid`/`gid`/`file_mode` mount options, or NFS with `root_squash`) must be writable by uid 999.
+- **Vroom `SENTRY_BUCKET_PROFILES`:** S3 query params changed: `s3ForcePathStyle=true` → `use_path_style=true`, `disableSSL=true` → `disable_https=true`. Update `vroom.persistence.bucketString` if you use an S3-compatible endpoint. `file://` and `gs://` are unaffected.
+- Self-hosted compose upgraded Postgres 14 → 18, moved to shared Python HTTP healthchecks, and dropped the vroom profiles-dir permission fix. None of these apply to this chart (Bitnami / external Postgres, HTTP probes, PVC-backed vroom). Upgrading the bundled Postgres is a separate decision.
+- No `sentry.conf.py` defaults changed upstream. New optional experimental flags you can add via `sentry.customFeatures`: `organizations:attribute-management`, `organizations:relay-automatic-json-expansion`, `organizations:explore-automatic-json-expansion-ui`.
+
 ## Upgrading to Chart 33.4.0
 
 Chart `33.4.0` targets [Sentry 26.8.0](https://github.com/getsentry/self-hosted/releases/tag/26.8.0).
